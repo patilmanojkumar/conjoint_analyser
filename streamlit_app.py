@@ -5,8 +5,21 @@ import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.title('Conjoint Analysis App')
-
+st.set_page_config(layout="wide")
+st.markdown(
+    "<h1 style='text-align: center;'>Ranking-Based Conjoint Analyser by <a href='https://github.com/patilmanojkumar'>Manojkumar Patil</a></h1>",
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <p align="center">
+      <a href="https://github.com/DenverCoder1/readme-typing-svg">
+        <img src="https://readme-typing-svg.herokuapp.com?font=Time+New+Roman&color=yellow&size=30&center=true&vCenter=true&width=600&height=100&lines=Conjoint+Analysis+Made+Simple!;rankconjoint_analyser-1.0;" alt="Typing SVG">
+      </a>
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 # Upload data
 uploaded_file = st.file_uploader("Upload your data file (CSV or Excel)", type=["csv", "xlsx", "xls"])
 if uploaded_file is not None:
