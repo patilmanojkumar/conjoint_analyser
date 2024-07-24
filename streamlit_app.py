@@ -31,10 +31,13 @@ if uploaded_file is not None:
 
     st.write("Data Preview:")
     st.write(df.head())
-
+    
+    # Identify the last column as the ranking column
+    ranking_column = df.columns[-1]
+    
     # Conjoint attributes and model specification
     conjoint_attributes = df.columns[:-1]  # Assuming the last column is 'ranking'
-    model = 'ranking ~ ' + ' + '.join([f'C({attr}, Sum)' for attr in conjoint_attributes])
+    model = f'{ranking_column} ~ ' + ' + '.join([f'C({attr}, Sum)' for attr in conjoint_attributes])
     
     # Fit the model
     model_fit = smf.ols(model, data=df).fit()
