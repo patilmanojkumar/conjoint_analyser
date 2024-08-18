@@ -74,29 +74,22 @@ if uploaded_file is not None:
 
     # Attribute importance
     attribute_importance = [round(100 * (i / sum(part_worth_range)), 2) for i in part_worth_range]
-    
-    # Display Attribute Importance
-    importance_table = pd.DataFrame({'Attribute': conjoint_attributes, 'Importance': attribute_importance})
-    st.write("Attribute Importance:")
-    st.write(importance_table)
-    
-    # Allow user to download the importance table
-    csv = importance_table.to_csv(index=False).encode('utf-8')
-    st.download_button(label="Download Importance Table", data=csv, file_name='attribute_importance.csv', mime='text/csv')
 
-    # Part-worths
-    part_worth_dict = {}
-    for item, pw, levels in zip(conjoint_attributes, part_worth, level_name):
-        part_worth_table = pd.DataFrame({'Level': levels, 'Part Worth': pw})
-        st.write(f"Attribute: {item}")
-        st.write(f"    Relative importance: {attribute_importance[conjoint_attributes.index(item)]}")
-        st.write(f"    Level wise part worths:")
-        st.write(part_worth_table)
-        part_worth_dict.update(dict(zip(levels, pw)))
+    # Creating a consolidated table
+    combined_data = []
+    for item, pw, levels, importance in zip(conjoint_attributes, part_worth, level_name, attribute_importance):
+        for level, value in zip(levels, pw):
+            combined_data.append([item, importance, level, value])
 
-        # Allow user to download the part-worths table
-        csv = part_worth_table.to_csv(index=False).encode('utf-8')
-        st.download_button(label=f"Download Part-Worths for {item}", data=csv, file_name=f'part_worths_{item}.csv', mime='text/csv')
+    combined_df = pd.DataFrame(combined_data, columns=['Attribute', 'Relative Importance', 'Level', 'Part Worth'])
+    
+    # Display the consolidated table
+    st.write("Consolidated Part-Worth and Importance Table:")
+    st.write(combined_df)
+    
+    # Allow user to download the consolidated table
+    csv = combined_df.to_csv(index=False).encode('utf-8')
+    st.download_button(label="Download Consolidated Table", data=csv, file_name='consolidated_part_worth_importance.csv', mime='text/csv')
 
     # Plotting relative importance of attributes
     plt.figure(figsize=(10, 5))
@@ -111,10 +104,8 @@ if uploaded_file is not None:
     st.download_button(label="Download Importance Plot", data=fig, file_name='importance_plot.png')
 
     # Utility calculation
-    utility = []
-    for i in range(df.shape[0]):
-        score = sum([part_worth_dict[df[attr][i]] for attr in conjoint_attributes])
-        utility.append(score)
+    part_worth_dict = {f"{item}_{level}": value for item, pw, levels in zip(conjoint_attributes, part_worth, level_name) for level, value in zip(levels, pw)}
+    utility = [sum([part_worth_dict[f"{attr}_{df[attr][i]}"] for attr in conjoint_attributes]) for i in range(df.shape[0])]
     df['utility'] = utility
 
     # Profile with the highest utility score
