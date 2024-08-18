@@ -5,6 +5,7 @@ import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+from io import BytesIO
 
 st.set_page_config(layout="wide")
 st.markdown(
@@ -99,9 +100,13 @@ if uploaded_file is not None:
     plt.ylabel('Importance')
     st.pyplot(plt)
 
+   # Save plot to a BytesIO object in PNG format
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+
     # Allow user to download the plot
-    fig = plt.gcf()
-    st.download_button(label="Download Importance Plot", data=fig, file_name='importance_plot.png')
+    st.download_button(label="Download Importance Plot", data=buf, file_name='importance_plot.png', mime='image/png')
 
     # Utility calculation
     part_worth_dict = {f"{item}_{level}": value for item, pw, levels in zip(conjoint_attributes, part_worth, level_name) for level, value in zip(levels, pw)}
